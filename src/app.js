@@ -1,17 +1,37 @@
 // index.js or server.js
 const express = require("express");
+
 const { AuthAdmin } = require("./middlewares/auth");
 const connectDB = require("./config/database");
 require("./config/database");
 const User = require("./models/User");
+const bcrypt = require("bcrypt");
 const app = express();
-
 app.use(express.json());
 
+const { validateSignUp } = require("./utils/validation.js");
+
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  await user.save();
-  res.send("Data added SuccesFully");
+  //validate the DATA first
+  try {
+    validateSignUp(req);
+    const { firstName, LastName, Email, password } = req.body;
+
+    // encrypt the password
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      firstName,
+      LastName,
+      Email,
+      password: hashPassword,
+    });
+
+    await user.save();
+    res.send("Data added SuccesFully");
+  } catch (err) {
+    res.status(400).send("Error: " + err.message);
+  }
 });
 
 app.get("/user", async (req, res) => {
