@@ -9,6 +9,7 @@ const bcrypt = require("bcrypt");
 const app = express();
 const cookieparser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth.js");
 app.use(express.json());
 app.use(cookieparser());
 
@@ -49,7 +50,7 @@ app.post("/login", async (req, res) => {
 
   if (isPasswordValid) {
     const token = await jwt.sign({ _id: user._id }, "123@DEV");
-    
+
     res.cookie("token", token);
     res.send("Login Successfull");
   } else {
@@ -57,19 +58,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-    const decodedMSG = await jwt.verify(token, "123@DEV");
-    const { _id } = decodedMSG;
-    const user = await User.findById(_id);
-    if (!user) {
-      throw new Error("User does not exist");
-    }
+    const user = req.user;
+ 
     res.send(user);
   } catch (err) {
     res.status(400).send("Please Login Again");
