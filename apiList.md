@@ -17,9 +17,9 @@
     - post/request/review/ignored/:requestUserId
 
 ## User Router
+    - get/user/requests
 
     - get/user/connections
-    - get/user/requests
     - get/user/feed
 
 - status : ignored / accepted / interested / reject

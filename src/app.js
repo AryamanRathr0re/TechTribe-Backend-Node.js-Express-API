@@ -16,10 +16,12 @@ const { validateSignUp } = require("./utils/validation.js");
 const authRouter = require("./routes/auth.js");
 const profileRouter = require("./routes/profileRouter.js");
 const connectionRequest = require("./routes/connectionRequest.js");
+const userRouter = require("./routes/user.js");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRequest);
+app.use("/", userRouter);
 
 connectDB()
   .then(() => {

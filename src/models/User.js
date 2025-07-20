@@ -6,6 +6,8 @@ const UserSchema = new mongoose.Schema(
     firstName: {
       type: String,
       required: true,
+      minLength: 4,
+      maxLength: 50,
     },
     LastName: {
       type: String,
@@ -20,14 +22,13 @@ const UserSchema = new mongoose.Schema(
         }
       },
     },
-    password:{
-      type:String,
-      validate(value){
-        if(!validator.isStrongPassword(value)){
+    password: {
+      type: String,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
           throw new Error("Password Needs to be Strong");
-          
         }
-      }
+      },
     },
     profile: {
       type: String,
@@ -43,10 +44,9 @@ const UserSchema = new mongoose.Schema(
 
     gender: {
       type: String,
-      validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
-          throw new Error("Gender doenst exist");
-        }
+      enum: {
+        values: ["male", "female", "others"],
+        message: `{VALUE} is not a valid gender type`,
       },
     },
     about: {
@@ -65,6 +65,7 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
+UserSchema.index({ firstName: 1 });
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
