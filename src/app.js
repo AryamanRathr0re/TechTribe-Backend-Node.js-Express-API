@@ -6,7 +6,7 @@ const User = require("./models/User");
 const app = express();
 const cookieparser = require("cookie-parser");
 const http = require("http");
-
+require("dotenv").config()
 
 // FIX: Use CORS globally and allow PATCH method
 app.use(
@@ -28,6 +28,7 @@ const connectionRequest = require("./routes/connectionRequest.js");
 const userRouter = require("./routes/user.js");
 const initialiseSocket = require("./utils/soket.js");
 const chatRouter = require("./routes/chat.js");
+const { config } = require("dotenv");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
@@ -35,18 +36,15 @@ app.use("/", connectionRequest);
 app.use("/", userRouter);
 app.use("/", chatRouter);
 
-
 const server = http.createServer(app);
 
-initialiseSocket(server)
-
-
+initialiseSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Connection established Successfully");
 
-    server.listen(3000, () => {
+    server.listen(process.env.PORT, () => {
       console.log("the server is running");
     });
   })
