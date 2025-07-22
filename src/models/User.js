@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-
+const jwt = require("jsonwebtoken");
 const UserSchema = new mongoose.Schema(
   {
     firstName: {
@@ -49,6 +49,9 @@ const UserSchema = new mongoose.Schema(
         message: `{VALUE} is not a valid gender type`,
       },
     },
+    age: {
+      type: Number,
+    },
     about: {
       type: String,
       default: "This is default About",
@@ -64,6 +67,12 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+UserSchema.methods.getJWT = function () {
+  const token = jwt.sign({ _id: this._id }, "123@DEV", {
+    expiresIn: "7d",
+  });
+  return token;
+};
 
 UserSchema.index({ firstName: 1 });
 const User = mongoose.model("User", UserSchema);

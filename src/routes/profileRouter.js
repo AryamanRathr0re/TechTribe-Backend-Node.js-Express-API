@@ -13,7 +13,7 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
     res.status(400).send("Please Login Again");
   }
 });
-profileRouter.patch("/editProfile", userAuth, async (req, res) => {
+profileRouter.post("/profile/edit", userAuth, async (req, res) => {
   try {
     // Assume userAuth sets req.user to the authenticated user
     const user = req.user;
@@ -22,15 +22,14 @@ profileRouter.patch("/editProfile", userAuth, async (req, res) => {
     if (!validateEditProfileOfUser(req)) {
       return res.status(400).send("Cannot edit this field");
     }
-
-    // Update only allowed fields
+  // Update only allowed fields
     const updates = Object.keys(req.body);
     updates.forEach((field) => {
       user[field] = req.body[field];
     });
 
     await user.save();
-    res.status(200).send("Profile Updated Successfully!!!");
+    res.json({ message:"updated",data:user });
     console.log(user);
   } catch (error) {
     res.status(500).send("ERROR: " + error.message);
