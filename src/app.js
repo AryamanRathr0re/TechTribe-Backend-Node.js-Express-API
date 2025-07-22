@@ -5,6 +5,8 @@ const connectDB = require("./config/database");
 const User = require("./models/User");
 const app = express();
 const cookieparser = require("cookie-parser");
+const http = require("http");
+
 
 // FIX: Use CORS globally and allow PATCH method
 app.use(
@@ -24,22 +26,30 @@ const authRouter = require("./routes/auth.js");
 const profileRouter = require("./routes/profileRouter.js");
 const connectionRequest = require("./routes/connectionRequest.js");
 const userRouter = require("./routes/user.js");
+const initialiseSocket = require("./utils/soket.js");
+const chatRouter = require("./routes/chat.js");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRequest);
 app.use("/", userRouter);
+app.use("/", chatRouter);
+
+
+const server = http.createServer(app);
+
+initialiseSocket(server)
+
+
 
 connectDB()
   .then(() => {
     console.log("Connection established Successfully");
 
-    app.listen(3000, () => {
+    server.listen(3000, () => {
       console.log("the server is running");
     });
   })
   .catch((err) => {
     console.error("Error in connection");
   });
-
-// Remove any app.options("*", ...) line if present
