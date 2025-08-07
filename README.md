@@ -25,4 +25,12 @@ This is the **backend server** for **TechTribe**, a social networking platform d
 ---
 
 ## 📂 Project Structure
-
+PracticeNODE/
+├── controllers/ # Business logic
+├── models/ # Mongoose schemas
+├── routes/ # Route definitions
+├── middleware/ # Auth middleware
+├── config/ # DB connection setup
+├── .env.example
+├── server.js # App entry point
+└── README.md
