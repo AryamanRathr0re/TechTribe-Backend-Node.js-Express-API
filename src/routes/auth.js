@@ -35,7 +35,7 @@ authRouter.post("/signup", async (req, res) => {
     const savedUser = await user.save();
     const token = await savedUser.getJWT();
     res.cookie("token", token, COOKIE_OPTIONS);
-    res.json({ message: "User Added", data: savedUser });
+    res.json({ message: "User Added", data: savedUser, token });
   } catch (err) {
     res.status(400).send("Error: " + err.message);
   }
@@ -63,7 +63,10 @@ authRouter.post("/login", async (req, res) => {
 
     res.cookie("token", token, COOKIE_OPTIONS);
 
-    res.json(user);
+    // Return user data without password, plus token
+    const userObj = user.toObject();
+    delete userObj.password;
+    res.json({ ...userObj, token });
   } catch (err) {
     console.error("Login error:", err.message);
     res.status(500).json({ message: "Internal Server Error" });

@@ -5,7 +5,16 @@ const JWT_SECRET = process.env.JWT_SECRET || "123@DEV";
 
 const userAuth = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    // Try to get token from Authorization header first, then from cookies
+    let token = null;
+    
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7); // Remove "Bearer " prefix
+    } else {
+      token = req.cookies?.token;
+    }
+    
     if (!token) {
       return res.status(401).json({ message: "Please Log In" });
     }
