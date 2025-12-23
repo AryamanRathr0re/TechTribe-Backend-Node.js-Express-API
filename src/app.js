@@ -11,9 +11,15 @@ require("dotenv").config();
 // Allow trusted proxies (e.g., Render) so secure cookies aren't stripped
 app.set("trust proxy", 1);
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
-  .split(",")
-  .map((o) => o.trim());
+// CORS: allow localhost and deployed frontend by default, overrideable via CORS_ORIGIN
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://techtribe-web.onrender.com",
+];
+const allowedOrigins = (process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",")
+  : defaultOrigins
+).map((o) => o.trim());
 
 app.use(
   cors({
