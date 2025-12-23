@@ -78,6 +78,8 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $ne: loggedInUser._id } },
       ],
     })
+      // Show newest users first so recently registered users appear at the top of the feed
+      .sort({ createdAt: -1 })
       .select(USER_SAFE_DATA)
       .skip(skip)
       .limit(limit);

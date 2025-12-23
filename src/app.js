@@ -6,22 +6,25 @@ const User = require("./models/User");
 const app = express();
 const cookieparser = require("cookie-parser");
 const http = require("http");
-require("dotenv").config()
+require("dotenv").config();
 
-// FIX: Use CORS globally and allow PATCH method
+// Allow trusted proxies (e.g., Render) so secure cookies aren't stripped
+app.set("trust proxy", 1);
+
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 
-
 app.use(express.json());
 app.use(cookieparser());
-
-const { validateSignUp } = require("./utils/validation.js");
 
 const authRouter = require("./routes/auth.js");
 const profileRouter = require("./routes/profileRouter.js");
@@ -29,8 +32,8 @@ const connectionRequest = require("./routes/connectionRequest.js");
 const userRouter = require("./routes/user.js");
 const initialiseSocket = require("./utils/soket.js");
 const chatRouter = require("./routes/chat.js");
-const { config } = require("dotenv");
 
+// Mount available routers
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionRequest);

@@ -13,6 +13,7 @@ const validateSignUp = (req) => {
 };
 
 const validateEditProfileOfUser = (req) => {
+  // Allow common profile fields that exist on the User schema
   const allowedEditFields = [
     "firstName",
     "LastName",
@@ -21,12 +22,18 @@ const validateEditProfileOfUser = (req) => {
     "age",
     "skills",
     "about",
+    "Contact",
+    "location",
+    "travelMode",
+    "travelLocation",
   ];
 
-  const isAllowedEdit = Object.keys(req.body).every((field) => {
-   return allowedEditFields.includes(field);
-  });
-  return isAllowedEdit;
+  // Return only fields that are allowed to be edited
+  const allowedUpdates = Object.keys(req.body).filter((field) =>
+    allowedEditFields.includes(field)
+  );
+
+  return allowedUpdates;
 };
 
 module.exports = {

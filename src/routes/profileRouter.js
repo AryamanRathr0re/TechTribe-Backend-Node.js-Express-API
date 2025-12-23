@@ -18,12 +18,14 @@ profileRouter.post("/profile/edit", userAuth, async (req, res) => {
     // Assume userAuth sets req.user to the authenticated user
     const user = req.user;
 
-    // Validate fields to be updated
-    if (!validateEditProfileOfUser(req)) {
+    // Get list of fields that are allowed to be updated
+    const updates = validateEditProfileOfUser(req);
+
+    if (!updates.length) {
       return res.status(400).send("Cannot edit this field");
     }
-  // Update only allowed fields
-    const updates = Object.keys(req.body);
+
+    // Update only allowed fields
     updates.forEach((field) => {
       user[field] = req.body[field];
     });

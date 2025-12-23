@@ -3,9 +3,16 @@ const { validateSignUp } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// const { default: isEmail } = require("validator/lib/isEmail.js");
-
 const express = require("express");
+
+const JWT_SECRET = process.env.JWT_SECRET || "123@DEV";
+const isProd = process.env.NODE_ENV === "production";
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: isProd ? "none" : "lax",
+  secure: isProd,
+  expires: new Date(Date.now() + 8 * 3600000),
+};
 
 const authRouter = express.Router();
 
@@ -26,10 +33,8 @@ authRouter.post("/signup", async (req, res) => {
     });
 
     const savedUser = await user.save();
-    const token=await savedUser.getJWT()
-     res.cookie("token", token, {
-      expires: new Date(Date.now() + 8 * 3600000),
-    });
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, COOKIE_OPTIONS);
     res.json({ message: "User Added", data: savedUser });
   } catch (err) {
     res.status(400).send("Error: " + err.message);
@@ -52,13 +57,11 @@ authRouter.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid Credentials" });
     }
 
-    const token = jwt.sign({ _id: user._id }, "123@DEV", {
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
-      expires: new Date(Date.now() + 8 * 3600000),
-    });
+    res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json(user);
   } catch (err) {
@@ -69,6 +72,7 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, {
+    ...COOKIE_OPTIONS,
     expires: new Date(Date.now()),
   });
   res.send("loggedout");
