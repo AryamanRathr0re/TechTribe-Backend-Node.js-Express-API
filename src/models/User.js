@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET || "123@DEV";
+
 const UserSchema = new mongoose.Schema(
   {
     firstName: {
@@ -68,7 +71,7 @@ const UserSchema = new mongoose.Schema(
   }
 );
 UserSchema.methods.getJWT = function () {
-  const token = jwt.sign({ _id: this._id }, "123@DEV", {
+  const token = jwt.sign({ _id: this._id }, JWT_SECRET, {
     expiresIn: "7d",
   });
   return token;
